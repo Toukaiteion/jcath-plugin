@@ -11,11 +11,11 @@ from typing import Any
 from PIL import Image
 from xml.etree import ElementTree as ET
 
-from models import MovieMetadata
-from nfo import generate_nfo
-from scrapers import JavBusScraper, PosterDecorator, JavWineScraper, Www324JavScraper
-from utils.downloader import ImageDownloader
-from utils.file import extract_number_from_path
+from jcatch_plugin.models import MovieMetadata
+from jcatch_plugin.nfo import generate_nfo
+from jcatch_plugin.scrapers import JavBusScraper, PosterDecorator, JavWineScraper, Www324JavScraper
+from jcatch_plugin.utils.downloader import ImageDownloader
+from jcatch_plugin.utils.file import extract_number_from_path
 
 
 def get_scraper():

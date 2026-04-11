@@ -1,7 +1,7 @@
 """Scraper decorator base class for composing scrapers."""
 
-from scrapers.base import BaseScraper
-from models import MovieMetadata
+from jcatch_plugin.scrapers.base import BaseScraper
+from jcatch_plugin.models import MovieMetadata
 
 
 class ScraperDecorator(BaseScraper):

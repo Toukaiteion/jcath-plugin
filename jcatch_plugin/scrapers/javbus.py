@@ -16,8 +16,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
-from scrapers.base import BaseScraper
-from models import MovieMetadata, Actor, ImageUrl
+from jcatch_plugin.scrapers.base import BaseScraper
+from jcatch_plugin.models import MovieMetadata, Actor, ImageUrl
 
 
 class JavBusScraper(BaseScraper):

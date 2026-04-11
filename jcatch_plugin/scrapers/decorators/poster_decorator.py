@@ -1,7 +1,7 @@
 """Poster decorator - override poster image from another scraper."""
 
-from models import ImageUrl, MovieMetadata
-from scrapers.decorators.base_decorator import ScraperDecorator
+from jcatch_plugin.models import ImageUrl, MovieMetadata
+from jcatch_plugin.scrapers.decorators.base_decorator import ScraperDecorator
 
 
 class PosterDecorator(ScraperDecorator):

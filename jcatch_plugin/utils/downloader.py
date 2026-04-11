@@ -5,7 +5,7 @@ from typing import Union
 
 import requests
 
-from models import ImageUrl
+from jcatch_plugin.models import ImageUrl
 
 
 class ImageDownloader:

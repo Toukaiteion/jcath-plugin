@@ -3,8 +3,8 @@
 from bs4 import BeautifulSoup
 import requests
 
-from models import ImageUrl
-from scrapers.base import BaseScraper
+from jcatch_plugin.models import ImageUrl
+from jcatch_plugin.scrapers.base import BaseScraper
 
 
 class JavWineScraper(BaseScraper):

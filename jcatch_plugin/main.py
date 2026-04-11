@@ -74,7 +74,7 @@ def find_video_file(source_dir: Path) -> Path | None:
 
 def download_images(metadata: MovieMetadata, output_dir: Path, number: str) -> None:
     """Download all images and save to output directory."""
-    total_steps = 3
+    total_steps = 4
     current_step = 0
 
     if metadata.poster.url:
@@ -111,6 +111,11 @@ def download_images(metadata: MovieMetadata, output_dir: Path, number: str) -> N
     if metadata.extrafanart:
         extra_dir = output_dir / "extrafanart"
         extra_dir.mkdir(exist_ok=True)
+        emit_progress(
+            "downloading",
+            "Downloading extrafanart...",
+            30 + int(40 * current_step / total_steps),
+        )
 
         for i, image in enumerate(metadata.extrafanart, start=1):
             ImageDownloader.download(image, extra_dir / f"extrafanart-{i}.jpg")
@@ -308,7 +313,7 @@ def main() -> None:
             }
 
             # 10. Write output to stdout
-            print(json.dumps(result, indent=2), file=sys.stdout, flush=True)
+            print(json.dumps(result, indent=2, ensure_ascii=False), file=sys.stdout, flush=True)
 
             sys.exit(0)  # Success
 

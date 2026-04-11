@@ -2,7 +2,7 @@
 
 from xml.etree import ElementTree as ET
 
-from models import MovieMetadata
+from jcatch_plugin.models import MovieMetadata
 
 
 class CDATAElement(ET.Element):

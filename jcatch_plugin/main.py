@@ -318,9 +318,27 @@ def main() -> None:
             sys.exit(0)  # Success
 
         except Exception as e:
-            # Clean up on error
-            if output_dir.exists():
-                shutil.rmtree(output_dir, ignore_errors=True)
+            # Clean up only files created by this operation
+            created_files = [
+                output_dir / f"{number}-poster.jpg",
+                output_dir / f"{number}-thumb.jpg",
+                output_dir / f"{number}-fanart.jpg",
+                output_dir / f"{number}.nfo",
+                output_dir / "extrafanart"  # directory
+            ]
+
+            # Delete files and subdirectories
+            for file_path in created_files:
+                if file_path.exists():
+                    if file_path.is_dir():
+                        shutil.rmtree(file_path, ignore_errors=True)
+                    else:
+                        file_path.unlink(missing_ok=True)
+
+            # Delete output_dir only if empty
+            if output_dir.exists() and not any(output_dir.iterdir()):
+                output_dir.rmdir()
+
             raise
 
     except Exception as e:

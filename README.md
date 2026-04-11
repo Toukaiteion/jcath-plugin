@@ -18,6 +18,7 @@
 ```bash
 cd /path/to/jcatch-plugin
 pip install -e .
+py -3.13 -m pip install -e .
 ```
 
 ## 使用方式

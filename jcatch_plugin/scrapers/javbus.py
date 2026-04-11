@@ -32,7 +32,7 @@ class JavBusScraper(BaseScraper):
     def _init_driver(self):
         """Initialize Chrome WebDriver with headless mode."""
         options = Options()
-        # options.add_argument("--headless")  # 无头模式
+        options.add_argument("--headless")  # 无头模式
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")

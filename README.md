@@ -13,12 +13,99 @@
 - 标准JSON输入输出接口
 - 进度通知通过stderr输出
 
+## 前置要求
+
+- Python 3.10+ (建议 3.13)
+- pip Chrome 浏览器 (用于 Selenium)
+
 ## 安装
 
+### 方法一：源码直接运行
+
+**Windows:**
 ```bash
-cd /path/to/jcatch-plugin
-pip install -e .
-py -3.13 -m pip install -e .
+# 安装依赖
+py -3.13 -m pip install pydantic requests beautifulsoup4 lxml selenium webdriver-manager python-dotenv Pillow
+
+# 运行
+py -3.13 -m jcatch_plugin.main < input.json
+```
+
+**Linux/macOS:**
+```bash
+# 安装依赖
+python3 -m pip install pydantic requests beautifulsoup4 lxml selenium webdriver-manager python-dotenv Pillow
+
+# 运行
+python3 -m jcatch_plugin.main < input.json
+```
+
+### 方法二：打包成 whl 后安装
+
+**Windows:**
+```bash
+# 安装构建工具
+py -3.13 -m pip install build
+
+# 构建 wheel 包
+py -3.13 -m build
+
+# 安装 wheel 包
+py -3.13 -m pip install dist/jcatch_plugin-*.whl
+
+# 运行
+jcatch-plugin < input.json
+```
+
+**Linux/macOS:**
+```bash
+# 安装构建工具
+python3 -m pip install build
+
+# 构建 wheel 包
+python3 -m build
+
+# 安装 wheel 包
+python3 -m pip install dist/jcatch_plugin-*.whl
+
+# 运行
+jcatch-plugin < input.json
+```
+
+### 方法三：打包成可执行文件
+
+**Windows:**
+```bash
+# 安装 PyInstaller
+py -3.13 -m pip install pyinstaller
+
+# 打包
+py -3.13 -m PyInstaller --onefile --name jcatch `
+  --hidden-import selenium.webdriver.chrome.webdriver `
+  --hidden-import selenium.webdriver.chrome.service `
+  --hidden-import webdriver_manager `
+  --hidden-import webdriver_manager.chrome `
+  jcatch_plugin/main.py
+
+# 运行（可执行文件在 dist/jcatch.exe）
+dist\jcatch.exe < input.json
+```
+
+**Linux/macOS:**
+```bash
+# 安装 PyInstaller
+python3 -m pip install pyinstaller
+
+# 打包
+python3 -m PyInstaller --onefile --name jcatch \
+  --hidden-import selenium.webdriver.chrome.webdriver \
+  --hidden-import selenium.webdriver.chrome.service \
+  --hidden-import webdriver_manager \
+  --hidden-import webdriver_manager.chrome \
+  jcatch_plugin/main.py
+
+# 运行（可执行文件在 dist/jcatch）
+./dist/jcatch < input.json
 ```
 
 ## 使用方式
@@ -156,6 +243,54 @@ jcatch-plugin/
         ├── downloader.py      # 图片下载器
         └── file.py           # 文件工具函数
 ```
+
+## 故障排除
+
+### Chrome 浏览器未找到
+
+**错误信息**: `Chrome browser not found`
+
+**解决方案**: 设置 `JCATCH_CHROME_PATH` 环境变量或安装 Chrome 浏览器
+
+```bash
+# Windows
+set JCATCH_CHROME_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+# Linux/macOS
+export JCATCH_CHROME_PATH="/usr/bin/google-chrome"
+```
+
+### 网络连接超时
+
+**错误信息**: `Connection timeout` 或 `Max retries exceeded`
+
+**解决方案**:
+- 检查网络连接
+- 如果使用代理，配置系统代理环境变量
+- 检查防火墙设置
+
+### 找不到电影编号
+
+**错误信息**: `Could not extract movie number`
+
+**解决方案**: 确保视频文件名或目录名包含有效的 JAV 编号（如 FSDSS-549、ABP-123 等）
+
+### Selenium WebDriver 问题
+
+**错误信息**: `WebDriverException`
+
+**解决方案**:
+- 确保已安装 webdriver-manager
+- 确保网络可以访问 ChromeDriver 下载源
+- webdriver-manager 会自动下载和管理 ChromeDriver
+
+### PyInstaller 打包后运行失败
+
+**错误信息**: 模块导入错误或缺少依赖
+
+**解决方案**:
+- 确保打包时使用了正确的 `--hidden-import` 参数
+- 使用 `pyinstaller --onefile --name jcatch --log-level DEBUG jcatch_plugin/main.py` 查看详细日志
 
 ## 许可证
 

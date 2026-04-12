@@ -17,6 +17,9 @@ from jcatch_plugin.scrapers import JavBusScraper, PosterDecorator, JavWineScrape
 from jcatch_plugin.utils.downloader import ImageDownloader
 from jcatch_plugin.utils.file import extract_number_from_path
 
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 
 def get_scraper(proxy: dict[str, str] | None = None):
     """Get configured scraper instance.
@@ -358,10 +361,10 @@ def main() -> None:
 
     except Exception as e:
         error = {
-            "status": "error",
+            "type": "error",
             "message": str(e),
         }
-        print(json.dumps(error, indent=2), file=sys.stdout, flush=True)
+        print(json.dumps(error), file=sys.stderr, flush=True)
         sys.exit(1)  # Failure
 
 

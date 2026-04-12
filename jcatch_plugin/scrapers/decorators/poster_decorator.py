@@ -16,15 +16,17 @@ class PosterDecorator(ScraperDecorator):
         scraper = PosterDecorator(base, Jav321Scraper())
     """
 
-    def __init__(self, wrapped, poster_scraper):
+    def __init__(self, wrapped, poster_scraper, proxy: dict[str, str] | None = None):
         """Initialize with wrapped scraper and poster scraper.
 
         Args:
             wrapped: Base scraper for metadata
             poster_scraper: Scraper that provides poster URLs
+            proxy: Dictionary with http/https proxy URLs
         """
         super().__init__(wrapped)
         self.poster_scraper = poster_scraper
+        self.proxy = proxy
 
     def fetch_metadata(self, number: str) -> MovieMetadata:
         """Fetch metadata and replace poster URL."""

@@ -25,8 +25,13 @@ class JavBusScraper(BaseScraper):
 
     BASE_URL = "https://www.javbus.com"
 
-    def __init__(self):
-        """Initialize scraper with headless browser."""
+    def __init__(self, proxy: dict[str, str] | None = None):
+        """Initialize scraper with headless browser and optional proxy.
+
+        Args:
+            proxy: Dictionary with http/https proxy URLs
+        """
+        self.proxy = proxy
         self.driver = self._init_driver()
 
     def _init_driver(self):
@@ -46,6 +51,13 @@ class JavBusScraper(BaseScraper):
         chrome_path = self._get_chrome_path()
         if chrome_path:
             options.binary_location = chrome_path
+
+        # Set proxy if configured
+        if self.proxy:
+            # Prefer HTTPS over HTTP for Chrome
+            proxy_url = self.proxy.get("https") or self.proxy.get("http")
+            if proxy_url:
+                options.add_argument(f"--proxy-server={proxy_url}")
 
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)

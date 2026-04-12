@@ -11,19 +11,23 @@ from typing import Any
 from PIL import Image
 from xml.etree import ElementTree as ET
 
-from jcatch_plugin.models import MovieMetadata
+from jcatch_plugin.models import MovieMetadata, ProxyConfig
 from jcatch_plugin.nfo import generate_nfo
 from jcatch_plugin.scrapers import JavBusScraper, PosterDecorator, JavWineScraper, Www324JavScraper
 from jcatch_plugin.utils.downloader import ImageDownloader
 from jcatch_plugin.utils.file import extract_number_from_path
 
 
-def get_scraper():
-    """Get configured scraper instance."""
+def get_scraper(proxy: dict[str, str] | None = None):
+    """Get configured scraper instance.
+
+    Args:
+        proxy: Dictionary with http/https proxy URLs
+    """
     # 使用与原项目相同的scraper配置
-    base = JavBusScraper()
-    with_poster = PosterDecorator(base, Www324JavScraper())
-    with_poster = PosterDecorator(with_poster, JavWineScraper())
+    base = JavBusScraper(proxy=proxy)
+    with_poster = PosterDecorator(base, Www324JavScraper(proxy=proxy), proxy=proxy)
+    with_poster = PosterDecorator(with_poster, JavWineScraper(proxy=proxy), proxy=proxy)
     return with_poster
 
 
@@ -257,6 +261,17 @@ def main() -> None:
             output_dir = Path(config["output_dir"])
         output_dir.mkdir(parents=True, exist_ok=True)
 
+        # 1.1 Extract proxy config (flat key-value format)
+        proxy_dict = None
+        http_proxy = config.get("http_proxy")
+        https_proxy = config.get("https_proxy")
+
+        if http_proxy or https_proxy:
+            proxy_config = ProxyConfig(http=http_proxy, https=https_proxy)
+            proxy_dict = proxy_config.to_dict()
+            # Set proxy for ImageDownloader
+            ImageDownloader.set_proxy(proxy_config)
+
         # 2. Find video file in source directory
         video_path = find_video_file(source_dir)
         if not video_path:
@@ -276,7 +291,7 @@ def main() -> None:
         emit_progress("searching", f"Identified media number: {number}", 10)
 
         # 4. Fetch metadata
-        scraper_instance = get_scraper()
+        scraper_instance = get_scraper(proxy=proxy_dict)
         emit_progress("searching", "Searching for movie...", 20)
         api_requests += 1
         metadata = scraper_instance.fetch_metadata(number)

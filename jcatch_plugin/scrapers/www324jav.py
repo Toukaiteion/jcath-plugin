@@ -12,6 +12,14 @@ class Www324JavScraper(BaseScraper):
 
     BASE_URL = "https://www3.24-jav.com"
 
+    def __init__(self, proxy: dict[str, str] | None = None):
+        """Initialize Www324JavScraper with optional proxy.
+
+        Args:
+            proxy: Dictionary with http/https proxy URLs
+        """
+        self.proxy = proxy
+
     def fetch_metadata(self, number: str):
         """This scraper only provides poster images, not full metadata."""
         raise NotImplementedError("Use _get_poster() method instead of fetch_metadata()")
@@ -27,7 +35,7 @@ class Www324JavScraper(BaseScraper):
         """
         url = f"{self.BASE_URL}/{number.lower()}"
         try:
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, proxies=self.proxy, timeout=30)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "lxml")
 

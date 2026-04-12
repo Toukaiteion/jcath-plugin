@@ -18,6 +18,27 @@ class ImageUrl(BaseModel):
     headers: dict[str, str] = Field(default_factory=dict, description="HTTP headers for download")
 
 
+class ProxyConfig(BaseModel):
+    """Proxy configuration for HTTP/HTTPS requests."""
+
+    http: str | None = Field(default=None, description="HTTP proxy URL")
+    https: str | None = Field(default=None, description="HTTPS proxy URL")
+
+    def to_dict(self) -> dict[str, str]:
+        """Convert to requests-compatible proxy dict."""
+        proxies = {}
+        if self.http:
+            proxies["http"] = self.http
+        if self.https:
+            proxies["https"] = self.https
+        return proxies
+
+    def to_chrome_arg(self) -> str | None:
+        """Convert to Chrome proxy-server argument."""
+        # Prefer HTTPS over HTTP for Chrome
+        return self.https or self.http
+
+
 class MovieMetadata(BaseModel):
     """Complete metadata for a JAV video."""
 

@@ -146,6 +146,43 @@ jcatch-plugin < input.json
 }
 ```
 
+### 代理配置
+
+在 `config` 中添加 `HTTP_PROXY` 和 `HTTPS_PROXY` 来配置代理：
+
+```json
+{
+  "action": "scrape",
+  "source_dir": "/path/to/movie/directory",
+  "config": {
+    "output_dir": "/path/to/output",
+    "HTTP_PROXY": "http://proxy.example.com:8080",
+    "HTTPS_PROXY": "http://proxy.example.com:8080"
+  },
+  "media_info": {
+    "num": "FSDSS-549"
+  }
+}
+```
+
+如果只需要 HTTP 代理：
+```json
+{
+  "config": {
+    "HTTP_PROXY": "http://proxy.example.com:8080"
+  }
+}
+```
+
+如果只需要 HTTPS 代理：
+```json
+{
+  "config": {
+    "HTTPS_PROXY": "http://proxy.example.com:8080"
+  }
+}
+```
+
 ### 输出格式
 
 ```json

@@ -1,0 +1,29 @@
+{
+  "id": "jcatch-jav-scraper",
+  "name": "JAV搜刮器",
+  "version": "0.1.0",
+  "description": "从多个JAV网站获取电影元数据",
+  "author": "JCatch",
+  "homepage": "https://github.com/jcatch/jav-scraper",
+  "supported_media_types": ["movie"],
+  "supported_languages": ["zh-CN", "en-US"],
+  "config_schema": {},
+  "runtime_requirements": {
+    "max_execution_time_seconds": 300,
+    "min_memory_mb": 512
+  },
+  "entry_point": "bin/jcatch-plugin",
+  "supported_identifiers": ["num", "filename"],
+  "config_schema": {
+    "http_proxy": {
+      "type": "string",
+      "label": "HTTP代理",
+      "default": ""
+    },
+	"https_proxy": {
+      "type": "string",
+      "label": "HTTPS代理",
+      "default": ""
+    }
+  }
+}

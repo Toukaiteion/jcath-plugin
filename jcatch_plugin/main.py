@@ -224,12 +224,13 @@ def get_created_files(output_dir: Path, number: str) -> dict[str, Any]:
     extrafanart_dir = output_dir / "extrafanart"
     if extrafanart_dir.exists():
         for f in sorted(extrafanart_dir.glob("*.jpg")):
-            screenshots.append(f.name)
+            screenshots.append(f"extrafanart/{f.name}")
 
     return {
         "nfo": f"{number}.nfo",
         "poster": f"{number}-poster.jpg",
         "fanart": f"{number}-fanart.jpg",
+        "thumb": f"{number}-thumb.jpg",
         "screenshots": screenshots,
     }
 

@@ -7,12 +7,11 @@
   "homepage": "https://github.com/jcatch/jav-scraper",
   "supported_media_types": ["movie"],
   "supported_languages": ["zh-CN", "en-US"],
-  "config_schema": {},
   "runtime_requirements": {
     "max_execution_time_seconds": 300,
     "min_memory_mb": 512
   },
-  "entry_point": "bin/jcatch-plugin",
+  "entry_point": "bin/jcatch",
   "supported_identifiers": ["num", "filename"],
   "config_schema": {
     "http_proxy": {

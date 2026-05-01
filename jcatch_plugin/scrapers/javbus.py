@@ -162,14 +162,46 @@ class JavBusScraper(BaseScraper):
                         # 继续循环等待 movie 出现
 
                     if self.driver.find_elements(By.CSS_SELECTOR, "form[action*='driver-verify.php']"):
-                        # 有驾驶员验证表单，随机选择答案后提交
+                        # 有驾驶员验证表单，选择答案后提交
+                        # 定义正确答案列表（选项文字内容，可根据实际题目调整）
+                        correct_answers = [
+                            "200元以上500元以下",
+                            "全部责任",
+                            "12分",
+                            "3分",
+                            "90日内",
+                            "发生事故后故意损坏、伪造现场、毁灭证据的",
+                            "30日",
+                            "普通三轮摩托车",
+                            "1年",
+                            "需要持有相应或者更高准驾车型驾驶证三年以上的驾驶人陪同",
+                            "临时行驶车号牌",
+                            "参加道路交通安全法律、法规和相关知识考试合格后",
+                            "每一年",
+                            "在考试过程中有舞弊行为",
+                        ]
                         # 找所有题目（li 标签）
                         questions = self.driver.find_elements(By.CSS_SELECTOR, "form ul li")
                         for question in questions:
-                            # 随机选择一个选项（A/B/C/D）
+                            # 获取所有选项
                             options = question.find_elements(By.CSS_SELECTOR, "input[type='radio']")
                             if options:
-                                random.choice(options).click()
+                                # 优先选择答案列表中的选项（通过文字内容匹配）
+                                selected = None
+                                for opt in options:
+                                    # 获取 input 后面的文字内容
+                                    # 找到父元素 label，获取其文本并去除 value 部分
+                                    label = opt.find_element(By.XPATH, "./..")
+                                    text = label.text.strip()
+                                    # 移除开头的 "A. "、"B. " 等前缀
+                                    text = re.sub(r'^[A-D]\.\s*', '', text)
+                                    # 检查是否在正确答案列表中
+                                    if any(ans in text for ans in correct_answers):
+                                        selected = opt
+                                        break
+                                if not selected:
+                                    selected = random.choice(options)
+                                selected.click()
                         # 提交答案
                         submit_btn = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit'][name='submit']")
                         submit_btn.click()

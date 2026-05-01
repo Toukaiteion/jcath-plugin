@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['jcatch_plugin\\main.py'],
+    ['jcatch_plugin/main.py'],
     pathex=[],
     binaries=[],
     datas=[],

@@ -66,6 +66,12 @@ class JavBusScraper(BaseScraper):
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
 
+        driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
+            "latitude": 35.6895,  # 纬度
+            "longitude": 139.6917,  # 经度
+            "accuracy": 100  # 精度（米）
+        })
+
         # Print Chrome version info
         chrome_version = driver.capabilities.get('browserVersion', 'unknown')
         chromedriver_version = driver.capabilities.get('chrome', {}).get('chromedriverVersion', 'unknown').split(' ')[0]

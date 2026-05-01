@@ -5,6 +5,7 @@ import random
 import shutil
 import sys
 import time
+import traceback
 from pathlib import Path
 from typing import Any
 
@@ -360,10 +361,11 @@ def main() -> None:
 
             raise
 
-    except Exception as e:
+    except BaseException as e:
+        full_traceback = traceback.format_exc()
         error = {
             "type": "error",
-            "message": str(e),
+            "message": full_traceback,
         }
         print(json.dumps(error), file=sys.stderr, flush=True)
         sys.exit(1)  # Failure

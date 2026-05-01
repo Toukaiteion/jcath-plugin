@@ -1,0 +1,21 @@
+{
+  "name": "jcatch-scraper-js",
+  "version": "1.0.0",
+  "description": "JAV movie metadata scraper using Playwright",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["jav", "scraper", "playwright", "nfo"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "cheerio": "^1.0.0-rc.12",
+    "axios": "^1.7.0",
+    "sharp": "^0.33.0",
+    "yargs": "^17.7.0",
+    "xmlbuilder2": "^3.1.0"
+  }
+}

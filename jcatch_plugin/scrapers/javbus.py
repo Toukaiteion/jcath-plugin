@@ -66,12 +66,6 @@ class JavBusScraper(BaseScraper):
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
 
-        driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
-            "latitude": 35.6895,  # 纬度
-            "longitude": 139.6917,  # 经度
-            "accuracy": 100  # 精度（米）
-        })
-
         # Print Chrome version info
         chrome_version = driver.capabilities.get('browserVersion', 'unknown')
         chromedriver_version = driver.capabilities.get('chrome', {}).get('chromedriverVersion', 'unknown').split(' ')[0]
@@ -128,89 +122,6 @@ class JavBusScraper(BaseScraper):
         try:
             # Navigate to page
             self.driver.get(url)
-
-            # 等待并处理三种可能的情况：
-            # 1. movie 元素存在 - 直接可以解析
-            # 2. modal-content 存在 - 需要处理年龄确认弹窗后等待 movie
-            # 3. driver-verify 表单存在 - 需要处理驾驶员验证后等待 movie
-            timeout = 30
-            start_time = time.time()
-
-            while time.time() - start_time < timeout:
-                try:
-                    # 使用 EC.any_of 同时等待三种条件（Selenium 4.3.0+）
-                    result = WebDriverWait(self.driver, 2).until(
-                        EC.any_of(
-                            EC.presence_of_element_located((By.CLASS_NAME, "movie")),
-                            EC.presence_of_element_located((By.CLASS_NAME, "modal-content")),
-                            EC.presence_of_element_located((By.CSS_SELECTOR, "form[action*='driver-verify.php']")),
-                        )
-                    )
-
-                    # 检查是哪种条件满足
-                    if self.driver.find_elements(By.CLASS_NAME, "movie"):
-                        # 已有 movie 内容，可以开始解析
-                        break
-
-                    if self.driver.find_elements(By.CLASS_NAME, "modal-content"):
-                        # 有年龄确认弹窗，处理弹窗
-                        checkbox = self.driver.find_element(By.CSS_SELECTOR, ".checkbox input[type='checkbox']")
-                        submit_btn = self.driver.find_element(By.ID, "submit")
-                        self.driver.execute_script("arguments[0].click();", checkbox)
-                        time.sleep(0.5)
-                        self.driver.execute_script("arguments[0].click();", submit_btn)
-                        # 继续循环等待 movie 出现
-
-                    if self.driver.find_elements(By.CSS_SELECTOR, "form[action*='driver-verify.php']"):
-                        # 有驾驶员验证表单，选择答案后提交
-                        # 定义正确答案列表（选项文字内容，可根据实际题目调整）
-                        correct_answers = [
-                            "200元以上500元以下",
-                            "全部责任",
-                            "12分",
-                            "3分",
-                            "90日内",
-                            "发生事故后故意损坏、伪造现场、毁灭证据的",
-                            "30日",
-                            "普通三轮摩托车",
-                            "1年",
-                            "需要持有相应或者更高准驾车型驾驶证三年以上的驾驶人陪同",
-                            "临时行驶车号牌",
-                            "参加道路交通安全法律、法规和相关知识考试合格后",
-                            "每一年",
-                            "在考试过程中有舞弊行为",
-                        ]
-                        # 找所有题目（li 标签）
-                        questions = self.driver.find_elements(By.CSS_SELECTOR, "form ul li")
-                        for question in questions:
-                            # 获取所有选项
-                            options = question.find_elements(By.CSS_SELECTOR, "input[type='radio']")
-                            if options:
-                                # 优先选择答案列表中的选项（通过文字内容匹配）
-                                selected = None
-                                for opt in options:
-                                    # 获取 input 后面的文字内容
-                                    # 找到父元素 label，获取其文本并去除 value 部分
-                                    label = opt.find_element(By.XPATH, "./..")
-                                    text = label.text.strip()
-                                    # 移除开头的 "A. "、"B. " 等前缀
-                                    text = re.sub(r'^[A-D]\.\s*', '', text)
-                                    # 检查是否在正确答案列表中
-                                    if any(ans in text for ans in correct_answers):
-                                        selected = opt
-                                        break
-                                if not selected:
-                                    selected = random.choice(options)
-                                selected.click()
-                        # 提交答案
-                        submit_btn = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit'][name='submit']")
-                        submit_btn.click()
-                        time.sleep(1)  # 等待提交后页面跳转
-                        # 继续循环等待 movie 出现
-
-                except Exception:
-                    # 短等待超时，继续循环
-                    continue
 
             # 最终确认 movie 元素存在
             WebDriverWait(self.driver, 5).until(

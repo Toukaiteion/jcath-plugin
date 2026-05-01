@@ -120,8 +120,42 @@ class JavBusScraper(BaseScraper):
             # Navigate to page
             self.driver.get(url)
 
-            # Wait for page to load - wait for movie info section
-            WebDriverWait(self.driver, 30).until(
+            # 等待并处理两种可能的情况：
+            # 1. movie 元素存在 - 直接可以解析
+            # 2. modal-content 存在 - 需要处理弹窗后等待 movie
+            timeout = 30
+            start_time = time.time()
+
+            while time.time() - start_time < timeout:
+                try:
+                    # 使用 EC.any_of 同时等待两种条件（Selenium 4.3.0+）
+                    result = WebDriverWait(self.driver, 2).until(
+                        EC.any_of(
+                            EC.presence_of_element_located((By.CLASS_NAME, "movie")),
+                            EC.presence_of_element_located((By.CLASS_NAME, "modal-content")),
+                        )
+                    )
+
+                    # 检查是哪种条件满足
+                    if self.driver.find_elements(By.CLASS_NAME, "movie"):
+                        # 已有 movie 内容，可以开始解析
+                        break
+
+                    if self.driver.find_elements(By.CLASS_NAME, "modal-content"):
+                        # 有弹窗，处理弹窗
+                        checkbox = self.driver.find_element(By.CSS_SELECTOR, ".checkbox input[type='checkbox']")
+                        submit_btn = self.driver.find_element(By.ID, "submit")
+                        self.driver.execute_script("arguments[0].click();", checkbox)
+                        time.sleep(0.5)
+                        self.driver.execute_script("arguments[0].click();", submit_btn)
+                        # 继续循环等待 movie 出现
+
+                except Exception:
+                    # 短等待超时，继续循环
+                    continue
+
+            # 最终确认 movie 元素存在
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "movie"))
             )
 

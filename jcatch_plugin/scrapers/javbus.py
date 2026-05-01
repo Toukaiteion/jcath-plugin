@@ -1,6 +1,7 @@
 """JavBus scraper implementation using Selenium."""
 import os
 import platform
+import random
 import re
 import time
 import tempfile
@@ -120,19 +121,21 @@ class JavBusScraper(BaseScraper):
             # Navigate to page
             self.driver.get(url)
 
-            # 等待并处理两种可能的情况：
+            # 等待并处理三种可能的情况：
             # 1. movie 元素存在 - 直接可以解析
-            # 2. modal-content 存在 - 需要处理弹窗后等待 movie
+            # 2. modal-content 存在 - 需要处理年龄确认弹窗后等待 movie
+            # 3. driver-verify 表单存在 - 需要处理驾驶员验证后等待 movie
             timeout = 30
             start_time = time.time()
 
             while time.time() - start_time < timeout:
                 try:
-                    # 使用 EC.any_of 同时等待两种条件（Selenium 4.3.0+）
+                    # 使用 EC.any_of 同时等待三种条件（Selenium 4.3.0+）
                     result = WebDriverWait(self.driver, 2).until(
                         EC.any_of(
                             EC.presence_of_element_located((By.CLASS_NAME, "movie")),
                             EC.presence_of_element_located((By.CLASS_NAME, "modal-content")),
+                            EC.presence_of_element_located((By.CSS_SELECTOR, "form[action*='driver-verify.php']")),
                         )
                     )
 
@@ -142,12 +145,27 @@ class JavBusScraper(BaseScraper):
                         break
 
                     if self.driver.find_elements(By.CLASS_NAME, "modal-content"):
-                        # 有弹窗，处理弹窗
+                        # 有年龄确认弹窗，处理弹窗
                         checkbox = self.driver.find_element(By.CSS_SELECTOR, ".checkbox input[type='checkbox']")
                         submit_btn = self.driver.find_element(By.ID, "submit")
                         self.driver.execute_script("arguments[0].click();", checkbox)
                         time.sleep(0.5)
                         self.driver.execute_script("arguments[0].click();", submit_btn)
+                        # 继续循环等待 movie 出现
+
+                    if self.driver.find_elements(By.CSS_SELECTOR, "form[action*='driver-verify.php']"):
+                        # 有驾驶员验证表单，随机选择答案后提交
+                        # 找所有题目（li 标签）
+                        questions = self.driver.find_elements(By.CSS_SELECTOR, "form ul li")
+                        for question in questions:
+                            # 随机选择一个选项（A/B/C/D）
+                            options = question.find_elements(By.CSS_SELECTOR, "input[type='radio']")
+                            if options:
+                                random.choice(options).click()
+                        # 提交答案
+                        submit_btn = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit'][name='submit']")
+                        submit_btn.click()
+                        time.sleep(1)  # 等待提交后页面跳转
                         # 继续循环等待 movie 出现
 
                 except Exception:

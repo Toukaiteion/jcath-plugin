@@ -181,8 +181,7 @@ class JavBusScraper(BaseScraper):
             self.driver.save_screenshot(screenshot_path)
             with open(source_path, 'w', encoding='utf-8') as f:
                 f.write(self.driver.page_source)
-            e.add_note(f"process info save to: {temp_dir}")
-            raise Exception(f"Failed to fetch metadata for {number}: {e}")
+            raise Exception(f"Failed to fetch metadata for {number}，save info: {temp_dir}: {e}")
 
     # Parsing methods
 

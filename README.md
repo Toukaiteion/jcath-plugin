@@ -74,18 +74,15 @@ jcatch-plugin < input.json
 
 ### 方法三：打包成可执行文件
 
+使用项目提供的 `jcatch.spec` 配置文件打包，确保所有依赖正确包含：
+
 **Windows:**
 ```bash
 # 安装 PyInstaller
 py -3.13 -m pip install pyinstaller
 
-# 打包
-py -3.13 -m PyInstaller --onefile --name jcatch `
-  --hidden-import selenium.webdriver.chrome.webdriver `
-  --hidden-import selenium.webdriver.chrome.service `
-  --hidden-import webdriver_manager `
-  --hidden-import webdriver_manager.chrome `
-  jcatch_plugin/main.py
+# 使用 spec 文件打包（推荐）
+py -3.13 -m PyInstaller jcatch.spec --clean
 
 # 运行（可执行文件在 dist/jcatch.exe）
 dist\jcatch.exe < input.json
@@ -96,17 +93,14 @@ dist\jcatch.exe < input.json
 # 安装 PyInstaller
 python3 -m pip install pyinstaller
 
-# 打包
-python3 -m PyInstaller --onefile --name jcatch \
-  --hidden-import selenium.webdriver.chrome.webdriver \
-  --hidden-import selenium.webdriver.chrome.service \
-  --hidden-import webdriver_manager \
-  --hidden-import webdriver_manager.chrome \
-  jcatch_plugin/main.py
+# 使用 spec 文件打包（推荐）
+python3 -m PyInstaller jcatch.spec --clean
 
 # 运行（可执行文件在 dist/jcatch）
 ./dist/jcatch < input.json
 ```
+
+> **提示**: 使用 `jcatch.spec` 文件打包可以自动包含所有必要的依赖项（如 PIL/Pillow、Selenium、BeautifulSoup 等），避免运行时模块缺失错误。
 
 ## 使用方式
 
@@ -323,11 +317,15 @@ export JCATCH_CHROME_PATH="/usr/bin/google-chrome"
 
 ### PyInstaller 打包后运行失败
 
-**错误信息**: 模块导入错误或缺少依赖
+**错误信息**: 模块导入错误或缺少依赖（如 `ModuleNotFoundError: No module named 'PIL'`）
 
 **解决方案**:
-- 确保打包时使用了正确的 `--hidden-import` 参数
-- 使用 `pyinstaller --onefile --name jcatch --log-level DEBUG jcatch_plugin/main.py` 查看详细日志
+- 使用项目提供的 `jcatch.spec` 配置文件打包，它已包含所有必要的 `hidden-import`：
+  ```bash
+  python3 -m PyInstaller jcatch.spec --clean
+  ```
+- 确保打包前已安装所有依赖：`pip install pydantic requests beautifulsoup4 lxml selenium webdriver-manager python-dotenv Pillow pyinstaller`
+- 如需调试，添加 `--log-level DEBUG` 参数查看详细日志
 
 ## 许可证
 

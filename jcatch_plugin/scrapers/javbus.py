@@ -3,6 +3,7 @@ import os
 import platform
 import re
 import time
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -174,6 +175,13 @@ class JavBusScraper(BaseScraper):
             )
 
         except Exception as e:
+            temp_dir = tempfile.mkdtemp(prefix="jcatch_err_")
+            screenshot_path = os.path.join(temp_dir, "debug_screenshot.png")
+            source_path = os.path.join(temp_dir, "debug_source.html")
+            self.driver.save_screenshot(screenshot_path)
+            with open(source_path, 'w', encoding='utf-8') as f:
+                f.write(self.driver.page_source)
+            e.add_note(f"process info save to: {temp_dir}")
             raise Exception(f"Failed to fetch metadata for {number}: {e}")
 
     # Parsing methods

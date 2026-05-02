@@ -51,13 +51,7 @@ function sleep(ms) {
  * @param {number} percent - Progress percentage (0-100)
  */
 function emitProgress(step, message, percent) {
-  const progress = {
-    type: 'progress',
-    step,
-    message,
-    percent
-  };
-  console.error(JSON.stringify(progress));
+  console.error(`[${step}] ${message} (${percent}%)`);
 }
 
 async function main() {
@@ -207,11 +201,7 @@ async function main() {
     process.exit(0);
 
   } catch (error) {
-    const errorResult = {
-      type: 'error',
-      message: error.message || String(error)
-    };
-    console.error(JSON.stringify(errorResult));
+    console.error(`[error] ${error.message || String(error)}`);
     process.exit(1);
   }
 }
